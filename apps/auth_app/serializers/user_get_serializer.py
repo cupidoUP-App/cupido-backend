@@ -44,7 +44,7 @@ def serialize_user_profile(user: Usuario) -> dict:
         "estadocuenta": user.estadocuenta,
         "tyc": user.tyc,
         "genero_id": user.genero.genero_id if user.genero else None,
-        "programa_id": user.programa.programa_id if user.programa else None,
+        "programa_id": user.perfil_set.first().programa_academico.programa_id if user.perfil_set.first() and user.perfil_set.first().programa_academico else None,
         "ubicacion_id": user.ubicacion.ubicacion_id if user.ubicacion else None,
     }
 
