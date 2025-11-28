@@ -15,11 +15,8 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # -------------------------
 SECRET_KEY = os.getenv("SECRET_KEY")
 RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
-DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
-ALLOWED_HOSTS = os.getenv(
-    "ALLOWED_HOSTS",
-    "backend.cupidocol.com"  # valor por defecto para producción
-).split(",")
+DEBUG = os.getenv("DEBUG", "False")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
 
 # Validación de variables críticas (simplificada con if anidado)
 if not SECRET_KEY:
@@ -127,7 +124,7 @@ DATABASES = {
 # -------------------------
 # Redis / Cache
 # -------------------------
-REDIS_URL = os.getenv("REDIS_URL", "redis://default:enncefrd2yomncab@190.90.114.214:6379")
+REDIS_URL = os.getenv("REDIS_URL", "redis://default:enncefrd2yomncab@190.90.114.214:6379")                                
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
