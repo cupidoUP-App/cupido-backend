@@ -15,8 +15,11 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # -------------------------
 SECRET_KEY = os.getenv("SECRET_KEY")
 RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
-DEBUG = os.getenv("DEBUG", "False")
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
+DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "backend.cupidocol.com"  # valor por defecto para producción
+).split(",")
 
 # Validación de variables críticas (simplificada con if anidado)
 if not SECRET_KEY:
@@ -45,7 +48,7 @@ USE_TZ = True
 # -------------------------
 # CORS Configuration
 # -------------------------
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS")
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "https://frontend.cupidocol.com").split(",")
 CORS_ALLOW_CREDENTIALS = True
 
 # -------------------------
