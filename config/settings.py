@@ -45,7 +45,7 @@ USE_TZ = True
 # -------------------------
 # CORS Configuration
 # -------------------------
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "https://frontend.cupidocol.com").split(",")
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS")
 CORS_ALLOW_CREDENTIALS = True
 
 # -------------------------
@@ -124,7 +124,7 @@ DATABASES = {
 # -------------------------
 # Redis / Cache
 # -------------------------
-REDIS_URL = os.getenv("REDIS_URL", "redis://default:enncefrd2yomncab@190.90.114.214:6379")                                
+REDIS_URL = os.getenv("REDIS_URL")                                
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
