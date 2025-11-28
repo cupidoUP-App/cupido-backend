@@ -28,24 +28,31 @@ class RedisClient:
 
     _instance = None  # singleton
 
-    def __new__(cls):
-        if cls._instance is None:
-            try:
-                redis_url = getattr(settings, "REDIS_URL", None)
-                if not redis_url:
-                    raise RuntimeError("REDIS_URL no está configurada en settings.")
-                cls._instance = redis.StrictRedis.from_url(
-                    redis_url,
-                    decode_responses=True,  # valores como str en lugar de bytes
-                    socket_connect_timeout=5,
-                    socket_timeout=5,
-                    health_check_interval=30,
-                )
-                logger.info("Conexión Redis inicializada correctamente.")
-            except Exception as e:
-                logger.error(f"Error al conectar con Redis: {e}")
-                raise
-        return cls._instance
+def __new__(cls):
+    if cls._instance is None:
+        try:
+            redis_url = getattr(settings, "REDIS_URL", None)
+
+            # Si no existe, Redis será opcional
+            if not redis_url:
+                logger.warning("REDIS_URL no está configurada. Redis no será usado.")
+                cls._instance = None
+                return cls._instance
+
+            cls._instance = redis.StrictRedis.from_url(
+                redis_url,
+                decode_responses=True,
+                socket_connect_timeout=5,
+                socket_timeout=5,
+                health_check_interval=30,
+            )
+            logger.info("Conexión Redis inicializada correctamente.")
+
+        except Exception as e:
+            logger.error(f"Error al conectar con Redis: {e}")
+            cls._instance = None  # Redis opcional
+    return cls._instance
+
 
 
 # Instancia global compartida
