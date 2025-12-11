@@ -71,7 +71,7 @@ class ContentModerator:
                     'api_secret': api_secret,
                     'models': cls.MODELS,
                 },
-                timeout=10  # Timeout de 10 segundos
+                timeout=5  # Timeout de 5 segundos (optimizado de 10s)
             )
             
             if response.status_code != 200:
