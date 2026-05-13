@@ -11,8 +11,11 @@ logger = logging.getLogger(__name__)
 
 class SessionInfoView(APIView):
     """
-    Devuelve la información del usuario autenticado según su token JWT.
-    Requiere autenticación mediante JWT.
+    Devuelve información del usuario autenticado.
+
+    Utiliza SessionSerializer para estructurar los datos de sesión
+    incluyendo datos del usuario, estado de cuenta y perfil.
+    Requiere JWT válido en header Authorization.
     """
 
     permission_classes = [permissions.IsAuthenticated]

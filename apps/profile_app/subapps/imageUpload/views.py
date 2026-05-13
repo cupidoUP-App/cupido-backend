@@ -1,3 +1,10 @@
+"""Vistas del módulo de imágenes de perfil.
+
+- ImagenListCreateView: listar/subir imágenes del usuario autenticado
+- ImagenDetailView: CRUD de imagen específica
+- ImagenStatusView: verificar estado de fotos del usuario
+"""
+
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -10,10 +17,12 @@ from django.conf import settings
 
 
 class ImagenListCreateView(generics.ListCreateAPIView):
+    """Lista o sube imágenes del usuario autenticado.
+
+    POST: Sube una nueva imagen con compresión y moderación automática.
+    Límite máximo de fotos configurable via PHOTO_MAX_FILES (default: 3).
     """
-    GET: Lista las imágenes del usuario autenticado.
-    POST: Sube una nueva imagen (con compresión y moderación automática).
-    """
+
     queryset = Imagen.objects.all()
     serializer_class = ImagenSerializer
     permission_classes = [IsAuthenticated]
@@ -23,7 +32,6 @@ class ImagenListCreateView(generics.ListCreateAPIView):
         return self.queryset.filter(usuario=self.request.user)
 
     def perform_create(self, serializer):
-        # Lógica de negocio: limitar cantidad maxima de fotos por usuario
         max_photos = getattr(settings, 'PHOTO_MAX_FILES', 3)
         current_count = Imagen.objects.filter(usuario=self.request.user).count()
         if current_count >= max_photos:
@@ -32,11 +40,8 @@ class ImagenListCreateView(generics.ListCreateAPIView):
 
 
 class ImagenDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    GET: Obtiene detalle de una imagen específica.
-    PUT/PATCH: Actualiza una imagen (ej: marcar como principal).
-    DELETE: Elimina una imagen.
-    """
+    """Obtiene, actualiza o elimina una imagen específica del usuario autenticado."""
+
     queryset = Imagen.objects.all()
     serializer_class = ImagenSerializer
     permission_classes = [IsAuthenticated]
@@ -46,25 +51,13 @@ class ImagenDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ImagenStatusView(APIView):
+    """Verifica el estado de fotos del usuario autenticado.
+
+    GET -> { has_minimum, current_count, minimum_required, maximum_allowed, can_upload_more }
     """
-    GET: Verifica si el usuario cumple con el mínimo de fotos requeridas.
-    
-    Lógica de negocio: El usuario debe tener al menos 1 foto para poder
-    avanzar del paso de carga de imágenes. Este endpoint permite al frontend
-    validar antes de permitir el avance.
-    
-    Response:
-        {
-            "has_minimum": true/false,
-            "current_count": N,
-            "minimum_required": 1,
-            "maximum_allowed": 3,
-            "can_upload_more": true/false
-        }
-    """
+
     permission_classes = [IsAuthenticated]
-    
-    MINIMUM_PHOTOS = 1  # Mínimo requerido para avanzar
+    MINIMUM_PHOTOS = 1
 
     def get(self, request):
         current_count = Imagen.objects.filter(usuario=request.user).count()

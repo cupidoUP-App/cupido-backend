@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 class LogoutView(APIView):
     """
     Cierra sesión invalidando el refresh token actual.
-    Requiere autenticación previa (JWT Access válido).
+
+    Recibe el refresh token en el body, lo agrega a la blacklist
+    de SimpleJWT para que no pueda ser usado nuevamente.
+    Requiere JWT access válido en header.
     """
 
     permission_classes = [permissions.IsAuthenticated]

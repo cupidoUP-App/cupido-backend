@@ -10,12 +10,13 @@ from apps.auth_app.utils import codes, email_utils
 
 class ResendVerificationCodeView(APIView):
     """
-    Reenvía un nuevo código de verificación:
-    - Verifica que exista un registro temporal (register:{email}) en Redis.
-    - Genera un nuevo código (sobrescribe el anterior y resetea intentos).
-    - Envía el código por correo.
-    - Responde con éxito o error.
+    Reenvía un nuevo código de verificación al email del usuario.
+
+    Verifica que exista un registro temporal activo en Redis,
+    genera un nuevo código de 6 dígitos (sobrescribe el anterior),
+    y lo envía por correo electrónico.
     """
+
     throttle_scope = "verify_email"
 
     def post(self, request):

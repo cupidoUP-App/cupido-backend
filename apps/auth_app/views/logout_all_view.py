@@ -11,8 +11,11 @@ logger = logging.getLogger(__name__)
 
 class LogoutAllView(APIView):
     """
-    Cierra sesión en todos los dispositivos.
-    Invalida todos los refresh tokens asociados al usuario autenticado.
+    Cierra sesión en todos los dispositivos simultáneamente.
+
+    Busca y agrega a la blacklist TODOS los refresh tokens
+    Outstanding asociados al usuario autenticado, forzando
+    el cierre de sesión en todos los clientes/dispositivos.
     """
 
     permission_classes = [permissions.IsAuthenticated]

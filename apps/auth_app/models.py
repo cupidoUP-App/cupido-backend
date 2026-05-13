@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Genero(models.Model):
+    """Catálogo de géneros para usuarios (Masculino, Femenino, Otro)."""
+
     genero_id = models.AutoField(primary_key=True)
     descripcion = models.CharField(max_length=30)
     fecha_creacion = models.DateTimeField(blank=True, null=True)
@@ -10,7 +12,10 @@ class Genero(models.Model):
     class Meta:
         db_table = 'genero'
 
+
 class Ubicacion(models.Model):
+    """Catálogo de ubicaciones/ciudades disponibles (Pamplona, Cúcuta)."""
+
     ubicacion_id = models.AutoField(primary_key=True)
     descripcion = models.CharField(max_length=100)
     fecha_creacion = models.DateTimeField(blank=True, null=True)
@@ -20,6 +25,8 @@ class Ubicacion(models.Model):
 
 
 class Programa(models.Model):
+    """Catálogo de programas académicos universitarios."""
+
     programa_id = models.AutoField(primary_key=True)
     descripcion = models.CharField(max_length=60)
     fecha_creacion = models.DateTimeField(blank=True, null=True)
@@ -27,7 +34,17 @@ class Programa(models.Model):
     class Meta:
         db_table = 'programa'
 
+
 class Usuario(AbstractUser):
+    """
+    Modelo principal de usuario. Hereda de AbstractUser pero adaptado
+    a la base de datos legacy con campos en español.
+
+    Usa email como USERNAME_FIELD en lugar de username.
+    La contraseña se almacena en 'contrasena' (no en 'password').
+    Proxies first_name/last_name/password/id a los campos legacy.
+    """
+
     usuario_id = models.AutoField(primary_key=True)
     genero = models.ForeignKey(Genero, models.DO_NOTHING, blank=True, null=True)
     nombres = models.CharField(max_length=50)
@@ -35,7 +52,7 @@ class Usuario(AbstractUser):
     fechanacimiento = models.DateField(blank=True)
     email = models.CharField(unique=True, max_length=60)
     contrasena = models.CharField(max_length=255)
-    numerotelefono = models.CharField(blank=True,max_length=15)
+    numerotelefono = models.CharField(blank=True, max_length=15)
     descripcion = models.CharField(max_length=500, blank=True, null=True)
     fecharegistro = models.DateTimeField(blank=True, null=True)
     estadocuenta = models.CharField(max_length=1, blank=True, null=True)
@@ -50,6 +67,7 @@ class Usuario(AbstractUser):
 
     @property
     def first_name(self):
+        """Proxy: retorna nombres en lugar de first_name."""
         return self.nombres
 
     @first_name.setter
@@ -58,6 +76,7 @@ class Usuario(AbstractUser):
 
     @property
     def last_name(self):
+        """Proxy: retorna apellidos en lugar de last_name."""
         return self.apellidos
 
     @last_name.setter
@@ -66,6 +85,7 @@ class Usuario(AbstractUser):
 
     @property
     def password(self):
+        """Proxy: retorna contrasena en lugar de password."""
         return self.contrasena
 
     @password.setter
@@ -74,6 +94,7 @@ class Usuario(AbstractUser):
 
     @property
     def id(self):
+        """Proxy: retorna usuario_id como id para compatibilidad con SimpleJWT."""
         return self.usuario_id
 
     def get_full_name(self):

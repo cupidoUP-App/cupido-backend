@@ -1,4 +1,10 @@
-# apps/notificacion_app/consumers.py
+"""Consumer WebSocket para notificaciones en tiempo real.
+
+Gestiona la conexión WebSocket por usuario, autenticando mediante
+JWT (query string) o fallback a búsqueda directa por user_id.
+Cada usuario se une a un grupo "user_{id}" para recibir eventos.
+"""
+
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -8,69 +14,53 @@ import jwt
 
 User = get_user_model()
 
+
 class NotificationConsumer(AsyncWebsocketConsumer):
-    
+    """Consumer WebSocket de notificaciones.
+
+    Autentica por JWT (query string) o búsqueda directa.
+    Se une al grupo "user_{id}" para recibir eventos de notificaciones.
+    Maneja ping/pong y redirige notification_message al cliente.
+    """
+
     @database_sync_to_async
     def get_user(self, user_id):
+        """Obtiene usuario por usuario_id con múltiples intentos de búsqueda."""
         try:
-            # Como tu campo se llama usuario_id, necesitas buscarlo específicamente
-            user_id_int = int(user_id)
-            
-            # Opción 1: Si tu modelo tiene el campo usuario_id como pk
-            return User.objects.get(usuario_id=user_id_int)
-            
-            # Opción 2: Si sobreescribiste id para usar usuario_id
-            # return User.objects.get(id=user_id_int)
-            
+            return User.objects.get(usuario_id=int(user_id))
         except (ValueError, TypeError):
-            # Si no es entero, intentar por username
             try:
                 return User.objects.get(username=user_id)
             except User.DoesNotExist:
                 return None
         except User.DoesNotExist:
-            print(f"User with usuario_id {user_id} not found")
             return None
-        except AttributeError as e:
-            print(f"Attribute error: {e}")
-            print(f"Available fields: {[f.name for f in User._meta.get_fields()]}")
-            # Intentar con el campo estándar id
+        except AttributeError:
             try:
                 return User.objects.get(id=user_id)
-            except:
+            except Exception:
                 return None
-    
+
     @database_sync_to_async
     def get_user_from_token(self, token):
+        """Decodifica JWT manualmente y obtiene el usuario asociado."""
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-            user_id = payload.get('user_id')
-            
-            if not user_id:
-                # Intentar con otros nombres de campo
-                user_id = payload.get('id') or payload.get('usuario_id') or payload.get('sub')
-            
+            user_id = payload.get('user_id') or payload.get('id') or payload.get('usuario_id') or payload.get('sub')
             if not user_id:
                 return None
-            
-            # Intentar obtener el usuario usando usuario_id
             try:
-                user_id_int = int(user_id)
-                return User.objects.get(usuario_id=user_id_int)
+                return User.objects.get(usuario_id=int(user_id))
             except (ValueError, TypeError):
-                # Si no es numérico, intentar por username
                 return User.objects.get(username=user_id)
             except User.DoesNotExist:
-                # Intentar con el campo estándar id
                 try:
                     return User.objects.get(id=user_id)
                 except User.DoesNotExist:
                     return None
-                
-        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, User.DoesNotExist) as e:
-            print(f"Token authentication error: {e}")
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, User.DoesNotExist):
             return None
-    
+
     async def connect(self):
         print(f"🔗 [WebSocket] Connection attempt")
         

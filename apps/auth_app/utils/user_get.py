@@ -1,30 +1,32 @@
-# apps/auth_app/utils/user_get.py
+"""Utilidad para obtener datos completos del perfil del usuario autenticado."""
 
 from apps.auth_app.serializers.user_get_serializer import serialize_user_profile
 from apps.auth_app.models import Usuario
 
 
 def get_user_profile_data(user: Usuario) -> dict:
-    """
-    Obtiene todos los datos del perfil del usuario y calcula su estado.
-    Mantiene sincronizado el campo estadocuenta si difiere del estado calculado.
-    
+    """Obtiene todos los datos del perfil del usuario y su estado.
+
+    Mantiene sincronizado el campo estadocuenta si difiere del estado
+    calculado. Usa serialize_user_profile para los datos del usuario.
+
+    Args:
+        user: Instancia del usuario autenticado.
+
     Returns:
-        dict: Contiene 'estado', 'should_complete_profile' y 'user' con todos los campos
+        dict con estado, should_complete_profile y user_data.
     """
     estado = user.estadocuenta
 
-    # Mantener sincronizado con el campo persistido si difiere
     if getattr(user, "estadocuenta", None) != estado:
         user.estadocuenta = estado
         user.save(update_fields=["estadocuenta"])
-    
-    # Serializar todos los campos del usuario
+
     user_data = serialize_user_profile(user)
-    
+
     return {
         "estado": estado,
-        "should_complete_profile": estado in ["1","2","3"],
+        "should_complete_profile": estado in ["1", "2", "3"],
         "user": user_data,
     }
 

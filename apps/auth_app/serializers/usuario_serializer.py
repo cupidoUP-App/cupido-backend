@@ -1,14 +1,16 @@
-# apps/auth_app/serializers/usuario_serializer.py
+"""Serializer básico del modelo Usuario.
+
+Expone los campos principales del usuario en respuestas JSON.
+Se usa en login, sesión y consulta de perfil.
+"""
 
 from rest_framework import serializers
 from apps.auth_app.models import Usuario
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    """
-    Serializa los datos básicos del usuario para respuestas JSON.
-    Se usa en LoginView, SessionInfoView y cualquier endpoint que devuelva info del usuario.
-    """
+    """Serializa datos básicos del usuario (id, nombres, apellidos, email)."""
+
     class Meta:
         model = Usuario
         fields = ["usuario_id", "nombres", "apellidos", "email"]

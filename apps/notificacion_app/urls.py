@@ -1,4 +1,5 @@
-# notificacion_app/urls.py
+"""URLs REST del módulo de notificaciones (ViewSet router)."""
+
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import NotificacionViewSet

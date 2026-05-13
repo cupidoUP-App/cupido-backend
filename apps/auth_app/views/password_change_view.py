@@ -17,8 +17,11 @@ logger = logging.getLogger(__name__)
 class PasswordChangeView(APIView):
     """
     Permite al usuario autenticado cambiar su contraseña.
-    Requiere verificación de contraseña actual.
+
+    Requiere contraseña actual (para verificación de identidad)
+    y nueva contraseña (con validaciones de seguridad de Django).
     """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):

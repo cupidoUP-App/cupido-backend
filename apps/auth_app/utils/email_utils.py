@@ -43,6 +43,7 @@ def send_email(subject: str, to_email: str, html_content: str, text_fallback: st
 
 
 def send_verification_email(to_email: str, code: str) -> bool:
+    """Envía un correo HTML con el código de verificación de 6 dígitos."""
     subject = "Verificar tu cuenta para empezar a flechar"
 
     body_lines = [
@@ -63,6 +64,7 @@ def send_verification_email(to_email: str, code: str) -> bool:
 
 
 def send_password_reset_email(to_email: str, token: str) -> bool:
+    """Envía un correo HTML con el token de recuperación de contraseña."""
     subject = "Recupera tu contraseña - cUPido"
 
     body_lines = [

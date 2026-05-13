@@ -20,10 +20,14 @@ logger = logging.getLogger(__name__)
 
 class PasswordResetRequestView(APIView):
     """
-    Solicita el restablecimiento de contraseña.
-    Recibe email institucional y envía token por correo.
-    Siempre responde OK por seguridad (no revela si email existe).
+    Solicita restablecimiento de contraseña.
+
+    Recibe email institucional, genera un token UUID único,
+    lo guarda en Redis con TTL de 30 min, y envía un enlace
+    de recuperación por correo. Siempre responde OK por seguridad
+    (no revela si el email existe en el sistema).
     """
+
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -43,9 +47,13 @@ class PasswordResetRequestView(APIView):
 
 class PasswordResetConfirmView(APIView):
     """
-    Confirma el restablecimiento de contraseña con token.
-    Valida token y actualiza contraseña.
+    Confirma el restablecimiento de contraseña con el token.
+
+    Valida el token UUID contra Redis, verifica que no haya sido
+    usado previamente, y actualiza la contraseña del usuario
+    aplicando los validadores de seguridad de Django.
     """
+
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):

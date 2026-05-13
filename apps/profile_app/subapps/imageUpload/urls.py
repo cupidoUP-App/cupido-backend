@@ -1,3 +1,5 @@
+"""URLs de la subapp de imágenes (photos)."""
+
 from django.urls import path
 from . import views
 

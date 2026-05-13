@@ -1,31 +1,27 @@
-from datetime import date
+"""Utilidad para verificar si el perfil del usuario está completo.
 
+Evita valores dummy creados durante el registro inicial
+hasta que el usuario complete su perfil.
+"""
+
+from datetime import date
 from apps.auth_app.models import Usuario
 
 
-REQUIRED_COMPLETION_FIELDS = [
-    "nombres",
-    "apellidos",
-    "genero",
-    "fechanacimiento",
-    "descripcion",
-]
-
 def is_profile_complete(user: Usuario) -> bool:
-    """
-    Determina si el perfil del usuario está completo con base en campos mínimos.
-    Evita valores dummy creados durante la verificación inicial.
-    
-    Campos requeridos:
-    - nombres (no dummy)
-    - apellidos (no dummy)
-    - genero (debe estar establecido)
-    - fechanacimiento (válida)
-    - descripcion (opcional, puede estar vacía)
+    """Verifica si el usuario ha completado los campos mínimos del perfil.
+
+    Evalúa que nombres, apellidos, género y fecha de nacimiento
+    no sean valores dummy ni estén vacíos.
+
+    Args:
+        user: Instancia del modelo Usuario.
+
+    Returns:
+        True si el perfil está completo, False en caso contrario.
     """
     if not isinstance(user, Usuario):
         return False
-
     if not user.nombres or user.nombres.strip().lower() == "dummy":
         return False
     if not user.apellidos or user.apellidos.strip().lower() == "dummy":
@@ -34,7 +30,6 @@ def is_profile_complete(user: Usuario) -> bool:
         return False
     if not user.fechanacimiento or user.fechanacimiento >= date.today():
         return False
-
     return True
 
 

@@ -1,4 +1,14 @@
-# apps/auth_app/urls.py
+"""
+URLs del módulo de autenticación (auth_app).
+
+Define 12 endpoints REST bajo /api/v1/auth/ para:
+- Registro y verificación de email
+- Login, logout y gestión de sesiones
+- Cambio y recuperación de contraseña
+- Consulta y actualización de perfil
+- Desactivación de cuenta
+"""
+
 from django.urls import path
 
 from apps.auth_app.views.register_view import RegisterView
@@ -30,6 +40,7 @@ urlpatterns = [
     path("logout-all/", LogoutAllView.as_view(), name="logout_all"),
     path("user-get/", UserGetView.as_view(), name="user_get"),
     path("user-update/", UserUpdateView.as_view(), name="user_update"),
+
     # Gestión de contraseña
     path("password-change/", PasswordChangeView.as_view(), name="password_change"),
     path("password-reset/", PasswordResetRequestView.as_view(), name="password_reset_request"),

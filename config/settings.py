@@ -1,3 +1,15 @@
+"""Configuración principal de Django para el proyecto Cupido.
+
+Secciones clave:
+- JWT: tokens access (30 min) y refresh (7 días) con rotación y blacklist
+- Channels: Redis como channel layer para WebSockets
+- MinIO/S3: almacenamiento de imágenes con django-storages
+- DRF: paginación, autenticación JWT por defecto
+- Rate limiting: protección en registro, verificación y login
+- CORS: orígenes permitidos desde variables de entorno
+- Sightengine: credenciales para moderación de contenido
+"""
+
 from pathlib import Path
 from datetime import timedelta
 import os

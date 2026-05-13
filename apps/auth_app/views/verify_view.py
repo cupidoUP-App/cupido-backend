@@ -19,11 +19,12 @@ logger = logging.getLogger(__name__)
 
 class VerifyEmailView(APIView):
     """
-    Paso 2 del registro:
-      - Valida email y código recibido
-      - Recupera los datos temporales desde Redis
-      - Crea el usuario definitivo en la base de datos
-      - Devuelve mensaje de éxito (o tokens JWT opcionales)
+    Paso 2 del registro de usuario.
+
+    Verifica el código enviado por email, recupera los datos
+    temporales desde Redis, crea el usuario definitivo en BD,
+    genera un match de bienvenida con el admin (ID 1), y
+    devuelve tokens JWT para iniciar sesión automáticamente.
     """
 
     throttle_scope = "verify_email"

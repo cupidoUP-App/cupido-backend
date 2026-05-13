@@ -1,20 +1,15 @@
-# apps/auth_app/serializers/session_serializer.py
+"""Serializer de información de sesión activa.
+
+Combina un mensaje de estado con los datos del usuario serializados.
+Preparado para extenderse con metadatos de sesión (IP, expiración, etc.).
+"""
+
 from rest_framework import serializers
 from apps.auth_app.serializers.usuario_serializer import UsuarioSerializer
 
 
 class SessionSerializer(serializers.Serializer):
-    """
-    Serializa la información de la sesión activa del usuario autenticado.
-    Incluye los datos básicos del usuario y un mensaje descriptivo.
-    Preparado para ampliarse con roles, expiración, metadata, etc.
-    """
+    """Serializa la sesión activa del usuario autenticado."""
 
     message = serializers.CharField(default="Sesión activa.")
     user = UsuarioSerializer()
-    # Campos futuros potenciales:
-    # roles = serializers.ListField(child=serializers.CharField(), default=[])
-    # token_expires_in = serializers.IntegerField(required=False)
-    # last_login = serializers.DateTimeField(required=False)
-    # ip_address = serializers.CharField(required=False)
-    # device_info = serializers.CharField(required=False)

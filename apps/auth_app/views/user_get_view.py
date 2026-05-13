@@ -9,13 +9,11 @@ from apps.auth_app.utils.user_get import get_user_profile_data
 
 class UserGetView(APIView):
     """
-    Endpoint para obtener todos los campos del perfil del usuario autenticado.
-    
-    - GET: Devuelve el estado del perfil y todos los datos del usuario.
-    - Requiere autenticación.
-    """
+    Obtiene todos los datos del perfil del usuario autenticado.
 
-    #permission_classes = [permissions.IsAuthenticated]
+    Delega en get_user_profile_data() para construir la respuesta
+    con los datos consolidados del usuario.
+    """
 
     def get(self, request):
         user = request.user

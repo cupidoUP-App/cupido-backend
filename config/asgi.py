@@ -1,3 +1,9 @@
+"""Configuración ASGI con soporte para Django Channels (WebSockets).
+
+Combina HTTP (Django ASGI) con WebSockets (chat + notificaciones),
+protegidos con JwtAuthMiddleware y AllowedHostsOriginValidator.
+"""
+
 import os
 import django
 
@@ -17,12 +23,8 @@ websocket_urlpatterns = (
 )
 
 application = ProtocolTypeRouter({
-    "http": get_asgi_application(), 
+    "http": get_asgi_application(),
     "websocket": AllowedHostsOriginValidator(
-        JwtAuthMiddleware(
-            URLRouter(
-                websocket_urlpatterns
-            )
-        )
+        JwtAuthMiddleware(URLRouter(websocket_urlpatterns))
     ),
 })

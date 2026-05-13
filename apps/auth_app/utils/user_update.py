@@ -1,16 +1,16 @@
-# apps/auth_app/utils/user_update.py
+"""Utilidad para generar respuesta estructurada tras actualizar perfil."""
 
-from apps.auth_app.utils.profile import is_profile_complete
 from apps.auth_app.models import Usuario
 
 
 def get_user_update_response_data(user: Usuario) -> dict:
-    """
-    Genera la respuesta estándar para actualizaciones de perfil.
-    Incluye mensaje de éxito, estado actual y datos básicos del usuario.
-    
+    """Genera la respuesta estándar para PATCH /user-update/.
+
+    Args:
+        user: Instancia del usuario actualizada.
+
     Returns:
-        dict: Respuesta estructurada para PATCH /user-update/
+        dict con mensaje, estado y datos básicos del usuario.
     """
     return {
         "message": "Perfil actualizado correctamente.",

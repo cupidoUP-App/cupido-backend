@@ -16,9 +16,13 @@ logger = logging.getLogger(__name__)
 
 class DeactivateAccountView(APIView):
     """
-    Permite al usuario desactivar su cuenta.
-    Requiere confirmación de contraseña y confirmación explícita.
+    Desactiva la cuenta del usuario autenticado (soft delete).
+
+    Requiere contraseña actual (verificación de identidad) y
+    confirmación explícita. Cambia estadocuenta a 'Inactiva'
+    sin eliminar datos del usuario.
     """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):

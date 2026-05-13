@@ -1,4 +1,13 @@
-# notificacion_app/signals.py
+"""Señales Django que generan notificaciones en tiempo real.
+
+Tres señales principales:
+1. LIKE: Cuando un usuario recibe un Like (post_save DetallesLike)
+2. MATCH: Cuando se crea un Chat (que implica un Match mutuo)
+3. CHAT: Cuando se recibe un mensaje y el chat no está abierto
+
+Cada señal crea un registro en notificacion y envía el evento
+al WebSocket del usuario destino via enviar_a_grupo().
+"""
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver

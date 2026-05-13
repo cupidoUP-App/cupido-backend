@@ -17,14 +17,17 @@ logger = logging.getLogger(__name__)
 
 class RegisterView(APIView):
     """
-    Paso 1 del registro:
-      - Recibe los datos del usuario (sin crear cuenta)
-      - Valida el reCAPTCHA, dominio institucional, edad, etc.
-      - Guarda temporalmente los datos en Redis
-      - Genera un código de verificación y lo envía por correo
+    Paso 1 del registro de usuario.
+
+    Recibe datos iniciales (email, contraseña, reCAPTCHA, T&C),
+    los valida, los guarda temporalmente en Redis y envía un
+    código de verificación por correo electrónico.
+
+    No crea el usuario en BD hasta que se verifique el email
+    (Paso 2 en VerifyEmailView).
     """
 
-    throttle_scope = "verify_email"  # usa rate-limit definido en settings
+    throttle_scope = "verify_email"
 
     def post(self, request):
         logger.info("Iniciando proceso de registro.")

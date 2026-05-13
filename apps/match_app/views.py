@@ -1,4 +1,8 @@
-# apps/match_app/views.py
+"""Vistas del sistema de matching/recomendaciones.
+
+- MatchRecommendationsView: feed de perfiles ordenados por compatibilidad
+- CheckMatchView: verifica si existe match activo con otro usuario
+"""
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,74 +11,46 @@ from rest_framework.permissions import IsAuthenticated
 from datetime import date
 
 from apps.profile_app.subapps.profile.models import Perfil
-from apps.preferences_app.models import Preference
 from apps.auth_app.models import Usuario
 from apps.profile_app.subapps.imageUpload.models import Imagen
-from apps.profile_app.subapps.imageUpload.serializers import ImagenSerializer
 from apps.profile_app.subapps.imageUpload.services import generate_presigned_url
 
-from .utils import (
-    obtener_perfil,
-    obtener_preferencias_por_perfil,
-    obtener_perfiles_sugeridos,
-)
+from .utils import obtener_perfil, obtener_preferencias_por_perfil, obtener_perfiles_sugeridos
 
 
 class MatchRecommendationsView(APIView):
-    """
-    Devuelve una lista de perfiles recomendados para el usuario autenticado.
+    """Genera el feed de perfiles recomendados para el usuario autenticado.
+
+    GET /match/recommendations/
+    Usa el motor de compatibilidad (match_app/utils.py) para calcular scores.
+    Incluye URLs presignadas de imágenes (válidas 1 hora).
     """
 
     permission_classes = [IsAuthenticated]
 
     def calcular_edad(self, fecha_nacimiento):
-        """
-        Calcula la edad a partir de la fecha de nacimiento.
-
-        Args:
-            fecha_nacimiento: date object con la fecha de nacimiento
-
-        Returns:
-            int: edad en años o None si no hay fecha
-        """
+        """Calcula edad en años desde una fecha de nacimiento."""
         if not fecha_nacimiento:
             return None
-
         today = date.today()
         edad = today.year - fecha_nacimiento.year
-
-        # Ajustar si aún no ha cumplido años este año
         if (today.month, today.day) < (fecha_nacimiento.month, fecha_nacimiento.day):
             edad -= 1
-
         return edad
 
     def get_ubicacion_str(self, perfil: Perfil):
-        """
-        Devuelve la ubicación como texto:
-
-        - Si el FK ubicacion tiene un campo nombre/ciudad, lo usa.
-        - Si no, mapea por ubicacion_id:
-            1 -> Pamplona
-            2 -> Cúcuta
-        """
-        # 1) Intentar leer del objeto FK (si existe y tiene nombre/ciudad)
+        """Convierte ubicacion_id a texto legible (Pamplona/Cúcuta)."""
         ubicacion_obj = getattr(perfil, "ubicacion", None)
         if ubicacion_obj is not None:
-            nombre = getattr(ubicacion_obj, "nombre", None) or getattr(
-                ubicacion_obj, "ciudad", None
-            )
+            nombre = getattr(ubicacion_obj, "nombre", None) or getattr(ubicacion_obj, "ciudad", None)
             if nombre:
                 return nombre
-
-        # 2) Fallback por id
         ubi_id = getattr(perfil, "ubicacion_id", None)
         if ubi_id == 1:
             return "Pamplona"
         if ubi_id == 2:
             return "Cúcuta"
-
-            return None
+        return None
 
     def get(self, request, *args, **kwargs):
         # 1) Usuario autenticado (JWT)

@@ -17,9 +17,10 @@ logger = logging.getLogger(__name__)
 class LoginView(APIView):
     """
     Endpoint de inicio de sesión.
-    - Valida credenciales con LoginSerializer.
-    - Genera y devuelve tokens JWT.
-    - Rechaza accesos de usuarios menores de edad o credenciales inválidas.
+
+    Valida credenciales (email + contraseña + reCAPTCHA), verifica
+    el estado de la cuenta, invalida sesiones previas (single session),
+    y devuelve tokens JWT (access + refresh) con datos del usuario.
     """
 
     permission_classes = [AllowAny]
